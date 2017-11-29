@@ -115,7 +115,7 @@ public class ChunkHeaderTest {
         headerChecksum.update(array, 0, 120);
         headerChecksum.update(array, 128, 384);
         testBinaryReaderBuilder.putDWordAt(UnsignedInteger.valueOf(headerChecksum.getValue()).intValue(), 124);
-        chunkHeader = new ChunkHeader(testBinaryReaderBuilder.build(), mock(ComponentLog.class), headerOffset, chunkNumber);
+        chunkHeader = new ChunkHeader(testBinaryReaderBuilder.build(), headerOffset, chunkNumber);
     }
 
     @Test

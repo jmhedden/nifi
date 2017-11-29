@@ -44,13 +44,12 @@ public class FileHeader extends Block {
     private final UnsignedInteger flags;
     private final UnsignedInteger checksum;
     private final InputStream inputStream;
-    private final ComponentLog log;
     private long currentOffset;
     private int count = 1;
 
-    public FileHeader(InputStream inputStream, ComponentLog log) throws IOException {
+
+    public FileHeader(InputStream inputStream) throws IOException {
         super(new BinaryReader(inputStream, 4096));
-        this.log = log;
         // Bytes will be checksummed
         BinaryReader binaryReader = getBinaryReader();
         CRC32 crc32 = new CRC32();
@@ -160,7 +159,7 @@ public class FileHeader extends Block {
             this.currentOffset += CHUNK_SIZE;
             BinaryReader binaryReader = new BinaryReader(inputStream, CHUNK_SIZE);
             try {
-                return new ChunkHeader(binaryReader, log, currentOffset, count++);
+                return new ChunkHeader(binaryReader, currentOffset, count++);
             } catch (IOException e) {
                 throw new MalformedChunkException("Malformed chunk, unable to parse", e, currentOffset, count - 1, binaryReader.getBytes());
             }

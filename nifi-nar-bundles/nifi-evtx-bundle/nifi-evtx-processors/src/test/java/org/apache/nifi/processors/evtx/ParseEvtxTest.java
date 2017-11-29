@@ -104,7 +104,7 @@ public class ParseEvtxTest {
     @Before
     public void setup() throws XMLStreamException, IOException {
         parseEvtx = new ParseEvtx(fileHeaderFactory, malformedChunkHandler, rootNodeHandlerFactory, resultProcessor);
-        when(fileHeaderFactory.create(in, componentLog)).thenReturn(fileHeader);
+        when(fileHeaderFactory.create(in)).thenReturn(fileHeader);
     }
 
     @Test

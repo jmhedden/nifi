@@ -23,6 +23,7 @@ import com.google.common.primitives.UnsignedLong;
 import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processors.evtx.parser.bxml.NameStringNode;
 import org.apache.nifi.processors.evtx.parser.bxml.TemplateNode;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -30,10 +31,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 /**
  * A Chunk is a self-contained group of templates, strings, and nodes
  */
 public class ChunkHeader extends Block {
+
+    private static final Logger logger = getLogger(ChunkHeader.class);
+
     public static final String ELF_CHNK = "ElfChnk";
     private final String magicString;
     private final UnsignedLong fileFirstRecordNumber;
@@ -49,12 +55,10 @@ public class ChunkHeader extends Block {
     private final Map<Integer, NameStringNode> nameStrings;
     private final Map<Integer, TemplateNode> templateNodes;
     private final int chunkNumber;
-    private final ComponentLog log;
     private UnsignedLong recordNumber;
 
-    public ChunkHeader(BinaryReader binaryReader, ComponentLog log, long headerOffset, int chunkNumber) throws IOException {
+    public ChunkHeader(BinaryReader binaryReader, long headerOffset, int chunkNumber) throws IOException {
         super(binaryReader, headerOffset);
-        this.log = log;
         this.chunkNumber = chunkNumber;
         CRC32 crc32 = new CRC32();
         crc32.update(binaryReader.peekBytes(120));
@@ -102,13 +106,13 @@ public class ChunkHeader extends Block {
             while (offset > 0) {
                 int token = new BinaryReader(binaryReader, offset - 10).read();
                 if (token != 0x0c) {
-                    log.warn("Unexpected token when parsing template at offset " + offset);
+                    logger.warn("Unexpected token when parsing template at offset " + offset);
                     break;
                 }
                 BinaryReader templateReader = new BinaryReader(binaryReader, offset - 4);
                 int pointer = NumberUtil.intValueMax(templateReader.readDWord(), Integer.MAX_VALUE, "Invalid pointer.");
                 if (offset != pointer) {
-                    log.warn("Invalid pointer when parsing template at offset " + offset);
+                    logger.warn("Invalid pointer when parsing template at offset " + offset);
                     break;
                 }
                 TemplateNode templateNode = new TemplateNode(templateReader, this);

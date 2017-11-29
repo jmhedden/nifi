@@ -66,7 +66,7 @@ public class FileHeaderTest {
         testBinaryReaderBuilder.putDWord(flags);
         testBinaryReaderBuilder.putDWord(UnsignedInteger.valueOf(crc32.getValue()));
 
-        fileHeader = new FileHeader(new ByteArrayInputStream(testBinaryReaderBuilder.toByteArray(4096)), mock(ComponentLog.class));
+        fileHeader = new FileHeader(new ByteArrayInputStream(testBinaryReaderBuilder.toByteArray(4096)));
     }
 
     @Test
